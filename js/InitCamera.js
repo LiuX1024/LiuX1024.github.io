@@ -59,6 +59,8 @@ function onSuccess(position) {
     newPosition.x += offsetX;
     newCamera.setAttribute('position',newPosition);
     console.log(newPosition);
+    test=cameraLongitude+cameraLatitude+'\n'+nowlatitude+nowlongitude+'\n'+offsetX+offsetY;
+    document.getElementById('test').textContent=test;
 }
 
 function onError(error) {
