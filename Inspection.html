@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>巡检</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <script>
+        const longitude = localStorage.getItem('longitude');
+        const latitude = localStorage.getItem('latitude');
+        console.log(longitude, latitude);
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .total {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; /* 左对齐 */
+            margin-top: 10px;
+            width: 360px;
+        }
+
+        .block {
+            display: flex;
+            align-items: center;
+            margin-top: 5px;
+            color: deepskyblue;
+            font-size: 24px;
+            white-space: pre;
+        }
+
+        .symbol {
+            margin-right: 10px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .text {
+        }
+
+        .bordered-blocks {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 5px;
+            white-space: pre;
+        }
+
+        .bordered-text {
+            border: 1px solid black;
+            padding: 5px;
+            margin-top: 5px;
+            width: 360px; /* 设置固定宽度 */
+            line-height: 1.5;
+        }
+
+        .buttons {
+            display: flex;
+            margin-top: 20px;
+        }
+
+        .button {
+            padding: 10px 20px;
+            background-color: deepskyblue;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .newWindow {
+            display: none; /* 初始时隐藏弹窗 */
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4); /* 半透明的背景颜色 */
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: auto;
+            top: 50%;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%;
+            transform: translateY(-50%);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .input-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .input-row label {
+            margin-right: 10px;
+        }
+
+        .input-row input {
+            width: 110px;
+        }
+
+        .input-row select {
+            width: 118px;
+            height: 25px;
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
+
+        #failure {
+
+            height: 100px;
+        }
+    </style>
+</head>
+<body>
+<div class="total">
+    <div class="block">
+        <span>用户001           巡检记录           </span>
+        <span class="symbol" onclick="returnWindow()">↺返回</span>
+    </div>
+
+    <div class="text">
+        <p id="location">当前位置为：</p>
+    </div>
+    <div id="dataBlock">
+    </div>
+</div>
+<div class="buttons">
+    <button class="button" onclick="returnWindow()">返回</button>
+</div>
+
+</body>
+<script>
+    var data =
+        [
+            ["施工通知1", "2023-05-31", "施工", "施工单位A", "施工范围A", "建筑物外墙装修", "装修", "是", "否", "建筑物外墙装修施工，需要注意安全事项。"],
+            ["施工通知2", "2023-05-31", "施工", "施工单位B", "施工范围B", "管道维修", "维修", "是", "是", "管道维修施工，请注意协调交通和水电设施。"],
+            ["施工通知3", "2023-05-31", "施工", "施工单位C", "施工范围C", "管道改造", "改造", "是", "是", "管道改造施工，请确保周边区域的安全。"],
+            ["施工通知4", "2023-05-31", "施工", "施工单位D", "施工范围D", "桥梁维护", "维护", "是", "否", "桥梁维护施工，请注意交通疏导和施工安全。"],
+            ["施工通知5", "2023-05-31", "施工", "施工单位E", "施工范围E", "绿化工程", "绿化", "否", "否", "绿化工程施工，请注意保护现有植被和环境。"]
+        ];
+    document.getElementById('location').innerText = '当前位置：\n经度：' + longitude + '\n纬度：' +
+        latitude + '\n查询附近10m巡检记录，得到' + data.length + '条数据。';
+    var container = document.getElementById("dataBlock");
+
+    for (var i = 0; i < data.length; i++) {
+        var div1 = document.createElement("div");
+        div1.className = "bordered-blocks";
+
+        var div2 = document.createElement("div");
+        div2.className = "bordered-text";
+        div2.innerText = data[i][0];
+
+        var div3 = document.createElement("div");
+        div3.className = "bordered-text";
+
+        div3.innerText =
+            "时间：" + data[i][1] + "\n" +
+            "事务类型：" + data[i][2] + "\n" +
+            "地点：" + data[i][3] + "       施工单位：" + data[i][4] + "\n" +
+            "施工范围：" + data[i][5] + "       施工种类：" + data[i][6] + "\n" +
+            "是否涉管：" + data[i][7] + "       是否存在机械开挖：" + data[i][8] + "\n" +
+            "问题描述：" + data[i][9] + "\n";
+        div1.appendChild(div2);
+        div1.appendChild(div3);
+        container.appendChild(div1);
+    }
+
+    function returnWindow() {
+
+        window.location.href = "Data.html";
+    }
+
+</script>
+</html>

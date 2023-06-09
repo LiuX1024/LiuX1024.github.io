@@ -1,0 +1,26 @@
+.window2 {
+    display: none; /* 初始时隐藏弹窗 */
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4); /* 半透明的背景颜色 */
+}
+
+.window2 .modal-content {
+    background-color: white;
+    margin: auto;
+    top:50%;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 50%;
+    transform: translateY(-50%);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}

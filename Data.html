@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>管理</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <script>
+        const longitude = localStorage.getItem('longitude');
+        const latitude = localStorage.getItem('latitude');
+        console.log(longitude, latitude);
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .total {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; /* 左对齐 */
+            margin-top: 10px;
+            width: 360px;
+        }
+
+        .block {
+            display: flex;
+            align-items: center;
+            margin-top: 5px;
+            color: deepskyblue;
+            font-size: 24px;
+            white-space: pre;
+        }
+
+        .symbol {
+            margin-right: 10px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .text {
+        }
+
+        .bordered-blocks {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 5px;
+            white-space: pre;
+        }
+
+        .bordered-text {
+            border: 1px solid black;
+            padding: 5px;
+            margin-top: 5px;
+            width: 360px; /* 设置固定宽度 */
+            line-height: 1.5;
+        }
+
+        .buttons {
+            display: flex;
+            margin-top: 20px;
+        }
+
+        .button {
+            padding: 10px 20px;
+            background-color: deepskyblue;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .newWindow {
+            display: none; /* 初始时隐藏弹窗 */
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4); /* 半透明的背景颜色 */
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: auto;
+            top:50%;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%;
+            transform: translateY(-50%);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .input-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .input-row label {
+            margin-right: 10px;
+        }
+
+        .input-row input{
+            width: 110px;
+        }
+
+        .input-row select {
+            width: 118px;
+            height: 25px;
+        }
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+            width: 100px;
+        }
+        #failure {
+
+            height:100px;
+        }
+        .window {
+            display: none; /* 初始时隐藏弹窗 */
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4); /* 半透明的背景颜色 */
+        }
+
+        .window .modal-content {
+            background-color: white;
+            margin: auto;
+            top: 50%;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%;
+            transform: translateY(-50%);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 关闭按钮样式 */
+        .window .close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        /* 按钮样式 */
+        .window .button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="total">
+    <div class="block">
+        <span>用户001                                     </span>
+        <span class="symbol" onclick="returnData()">↺返回</span>
+    </div>
+
+    <div class="text">
+        <p id="location">当前位置为：</p>
+    </div>
+    <div id="dataBlock">
+    </div>
+
+
+<div class="buttons">
+    <button class="button" onclick="tempWindow()">实景AR</button>
+    <div style="width: 22px;"></div>
+    <button class="button" onclick="openWindow()">巡检打卡</button>
+    <div style="width: 22px;"></div>
+    <button class="button" onclick="newWindow()">巡检记录</button>
+</div>
+</div>
+<div id="tempWindow" class="window">
+    <div class="modal-content">
+        <p id="jumpWord">请将手机平放于地面以使用实景三维功能！</p>
+        <button class="button" onclick="enterAR()">确认</button>
+    </div>
+</div>
+
+<div id="newWindow" class="newWindow">
+    <div class="modal-content">
+        <span class="close" onclick="closeWindow()">&times;</span>
+        <h3 class="modal-title">周边巡检打卡</h3>
+        <div class="input-row">
+            <label>标题:</label>
+            <input type="text" placeholder="">
+        </div>
+        <div class="input-row">
+            <label>时间:</label>
+            <input type="text" placeholder="">
+        </div>
+        <div class="input-row">
+            <label>事项类型:</label>
+            <input type="text" placeholder="">
+        </div>
+        <div class="input-row">
+            <label>地点:</label>
+            <input type="text" placeholder="">
+        </div>
+        <div class="input-row">
+            <label>施工单位:</label>
+            <input type="text" placeholder="">
+        </div>
+        <div class="input-row">
+            <label>施工范围:</label>
+            <input type="text" placeholder="">
+        </div>
+        <div class="input-row">
+            <label>施工种类:</label>
+            <input type="text" placeholder="">
+        </div>
+        <div class="input-row">
+            <label>是否涉管:</label>
+            <input type="text" placeholder="">
+        </div>
+        <label>是否存在机械开挖:</label>
+        <input type="text" placeholder="">
+        <div class="input-row">
+            <label>问题描述:</label>
+            <input type="text" placeholder="">
+        </div>
+        <button class="button" onclick="closeWindow()">打卡</button>
+    </div>
+</div>
+
+</body>
+<script>
+    var nameMapping = {
+        waterSupply: '给水',
+        drainage: '排气',
+        gas: '燃气',
+        electricity: '电力',
+        communication: '通信',
+        heatSupply: '热力',
+        industrial: '工业',
+        oil: '石油',
+        utilityTrench: '综合管沟',
+        vacuumWaste: '垃圾真空'
+    };
+    var data = [
+        ['001', 'waterSupply', 1, 113.28322, 113.283216, 23.133282, 23.133197, 3,3],
+        ['002', 'drainage', 0.5, 113.283241, 113.28324, 23.133285, 23.13321, 0, 0],
+        ['003', 'gas', 0.9, 113.283215, 113.283214, 23.133293, 23.13322, 2,2],
+        ['004', 'electricity', 0.3, 113.283329, 113.283332, 23.133308, 23.13323, 1, 1],
+        ['005', 'communication', 1, 113.283348, 113.283344, 23.133322, 23.133224, 4, 4],
+        ['006', 'heatSupply', 1, 113.283324, 113.283324, 23.133319, 23.133226, 5, 5],
+        ['007', 'industrial', 0.7, 113.283342, 113.283342, 23.133328, 23.133226, 6, 6],
+        ['008', 'oil', 2, 113.283321, 113.283324, 23.133336, 23.133214, 5, 5],
+        ['009', 'utilityTrench', 1, 113.283233, 113.283231, 23.133319, 23.133212, 7, 7],
+        ['010', 'vacuumWaste', 1.2, 113.283328, 113.283326, 23.133332, 23.13323, 2, 2]
+    ];
+    document.getElementById('location').innerText = '当前位置：\n经度：' + longitude + '\n纬度：' + latitude + '\n查询附近10m管线数据，得到' + data.length + '条数据。';
+    var container = document.getElementById("dataBlock");
+
+    for (var i = 0; i < data.length; i++) {
+        var div1 = document.createElement("div");
+        div1.className = "bordered-blocks";
+
+        var div2 = document.createElement("div");
+        div2.className = "bordered-text";
+        div2.innerText = "管线" + (i + 1);
+
+        var div3 = document.createElement("div");
+        div3.className = "bordered-text";
+        var temp = data[i][0].replace("old", "");
+        temp = temp.replace("new", "");
+        div3.innerText =
+            "管线编号：" + temp + "       管线类型：" + nameMapping[data[i][1]] + "\n" +
+            "管线半径：" + data[i][2] + "m\n" +
+            "起点经度：" + data[i][3] + "       终点经度：" + data[i][4] + "\n" +
+            "起点纬度：" + data[i][5] + "       终点纬度：" + data[i][6] + "\n" +
+            "起点深度：" + data[i][7] + "m       终点深度：" + data[i][8] + "m\n";
+        div1.appendChild(div2);
+        div1.appendChild(div3);
+        container.appendChild(div1);
+    }
+
+    function enterAR() {
+        localStorage.setItem('longitude', longitude);
+        localStorage.setItem('latitude', latitude);
+        // 切换到第二个网页
+        window.location.href = "AR.html";
+    }
+
+    function returnData() {
+        window.location.href = "index.html";
+    }
+    function openWindow(){
+        document.getElementById('newWindow').style.display="block";
+    }
+    function closeWindow(){
+        document.getElementById('newWindow').style.display="none";
+    }
+    function newWindow(){
+        window.location.href = "Inspection.html";
+    }
+    function tempWindow(){
+        document.getElementById('tempWindow').style.display="block";
+    }
+</script>
+</html>

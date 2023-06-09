@@ -1,0 +1,36 @@
+.ar-button-block2 {
+    position: fixed;
+    left: 50%;
+    bottom: 40px; /* 距离底部一个按钮的高度 */
+    transform: translateX(-50%);
+    display: none;
+    flex-direction: column;
+    width: 400px;
+    height: auto;
+}
+.ar-button-block2 p{
+    text-align: center; /* 文本居中 */
+    color: white; /* 字体颜色为白色 */
+}
+.ar-button-block2 .button-row {
+    display: flex;
+    flex-direction: row;
+    height: calc(100% / 10);
+}
+
+.ar-button-block2 .button {
+    flex: 1;
+    border: none;
+    border-radius: 5px;
+    background-color: rgba(170, 170, 170, 0.7);
+    color: white;
+    padding: 10px;
+    margin: 5px;
+    cursor: pointer;
+}
+
+.ar-button-block2 .button.double-width {
+    flex-grow: 2;
+    background-color: rgba(60, 130, 230, 0.7);
+    color: white;
+}

@@ -1,0 +1,78 @@
+.gpsWindow {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.gpsWindow .modal-content {
+    background-color: white;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: auto;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    top:50%;
+    transform: translateY(-50%);
+}
+
+.gpsWindow .modal-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.gpsWindow .input-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.gpsWindow .input-row label {
+    font-size: 15px;
+    margin-right: 10px;
+}
+
+.gpsWindow .input-row input {
+
+    font-size: 12px;
+    width: 95px;
+    margin-right: 10px;
+}
+
+.gpsWindow #map {
+    width: 300px;
+    height: 300px;
+    background-color: lightgray;
+}
+
+.gpsWindow .map {
+    height: 100%;
+    width: 100%;
+    float: left;
+}
+
+.gpsWindow .close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.gpsWindow .button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    margin-top: 10px;
+}

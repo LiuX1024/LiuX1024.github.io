@@ -1,0 +1,27 @@
+.ar-button-block1 {
+    position: fixed;
+    left: 50%;
+    bottom: 40px; /* 距离底部一个按钮的高度 */
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    width: 400px;
+    height: auto;
+}
+
+.ar-button-block1 .button-row {
+    display: flex;
+    flex-direction: row;
+    height: calc(100% / 10);
+}
+
+.ar-button-block1 .button {
+    flex: 1;
+    border: none;
+    border-radius: 5px;
+    background-color: rgba(170,170,170,0.7);
+    color: white;
+    padding: 10px;
+    margin: 5px;
+    cursor: pointer;
+}

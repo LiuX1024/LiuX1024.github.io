@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AR</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <script src="js/aframe-1.1.0/dist/aframe-master.js"></script>
+    <script src='js/AR.js-master/three.js/build/ar-threex-location-only.js'></script>
+    <script src='js/AR.js-master/aframe/build/aframe-ar.js'></script>
+    <script src="js/echarts/dist/echarts.min.js"></script>
+    <script src="js/src/aframe-event-set-component.js"></script>
+    <script src="js/src/extra-stats.umd.min.js"></script>
+    <script src="js/src/aframe-physics-system.js"></script>
+
+    <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"/>
+    <script src="https://webapi.amap.com/maps?v=2.0&key=e26a0aa90a4b4adfc02d2b93b151689b&plugin=AMap.Autocomplete"></script>
+    <script src="https://a.amap.com/jsapi_demos/static/demo-center/js/demoutils.js"></script>
+
+    <script src="js/InitPipeData.js"></script>
+    <script src="js/Data.js"></script>
+    <script src="js/Chart.js"></script>
+    <link href="css/AR-button1.css" type="text/css" rel="stylesheet"/>
+    <link href="css/AR-button2.css" type="text/css" rel="stylesheet"/>
+    <link href="css/Exit-button.css" type="text/css" rel="stylesheet"/>
+    <link href="css/Window1.css" type="text/css" rel="stylesheet"/>
+    <link href="css/Window2.css" type="text/css" rel="stylesheet"/>
+    <link href="css/NewWindow.css" type="text/css" rel="stylesheet"/>
+    <link href="css/Choose.css" type="text/css" rel="stylesheet"/>
+    <link href="css/GpsWindow.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<!--extra-stats="three: true; aframe: true; three-alloc: false"-->
+<a-scene vr-mode-ui='enabled: false' arjs='sourceType: webcam; videoTexture: true; debugUIEnabled: false'
+         renderer='antialias: true; alpha: true'
+         physics="gravity: 0">
+    <a-entity id="waterSupply"></a-entity>
+    <a-entity id="drainage"></a-entity>
+    <a-entity id="gas"></a-entity>
+    <a-entity id="electricity"></a-entity>
+    <a-entity id="communication"></a-entity>
+    <a-entity id="heatSupply"></a-entity>
+    <a-entity id="industrial"></a-entity>
+    <a-entity id="oil"></a-entity>
+    <a-entity id="utilityTrench"></a-entity>
+    <a-entity id="vacuumWaste"></a-entity>
+    <a-entity id="simulatePipe"></a-entity>
+</a-scene>
+
+<button class="exit-button" onclick="Exit()">&#8629;</button> <!-- 退出图标按钮 -->
+
+<div id="ar-button1" class="ar-button-block1">
+    <div class="button-row">
+        <button class="button" onclick="choose()">筛选类型</button>
+        <button class="button" onclick="simulate()">模拟管线</button>
+    </div>
+</div>
+
+<div id="pipeData" class="window1">
+    <div class="modal-content" style="font-size: 14px">
+        <span class="close" onclick="closePipeData()">&times;</span>
+        <h3>管线数据</h3>
+        <p id="p1">管线编号：</p>
+        <p id="p2">管线类型：</p>
+        <p id="p3">管线尺寸：</p>
+        <p id="p4">管线长度：</p>
+        <p id="p5">中点经度：</p>
+        <p id="p6">中点纬度：</p>
+        <p id="p7">中点深度：</p>
+        <p id="p8">水平角：</p>
+        <p id="p9">俯仰角：</p>
+        <p id="p10" onclick="failureWindow()" style="color:deepskyblue; cursor: pointer">故障详情</p>
+        <div id="chartContainer" style="width: 300px; height: 300px;"></div>
+        <button class="button" onclick="submitfailure()">故障上报</button>
+    </div>
+</div>
+
+<div id="collide" class="window2">
+    <div class="modal-content">
+        <h3>警告</h3>
+        <p id="warn">当前模拟管线与管线碰撞！请重新移动。</p>
+    </div>
+</div>
+
+<div id="choose" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeChoose()">&times;</span>
+        <h3 class="modal-title">管道类型筛选</h3>
+        <form id="chooseForm" class="checkbox-group">
+            <label class="checkbox">
+                <input type="checkbox" value="waterSupply" onchange="handleCheckboxChange(this)" checked> 给水
+            </label>
+            <label class="checkbox">
+                <input type="checkbox" value="drainage" onchange="handleCheckboxChange(this)" checked> 排气
+            </label>
+            <label class="checkbox">
+                <input type="checkbox" value="gas" onchange="handleCheckboxChange(this)" checked> 燃气
+            </label>
+            <label class="checkbox">
+                <input type="checkbox" value="electricity" onchange="handleCheckboxChange(this)" checked> 电力
+            </label>
+            <label class="checkbox">
+                <input type="checkbox" value="communication" onchange="handleCheckboxChange(this)" checked> 通信
+            </label>
+            <label class="checkbox">
+                <input type="checkbox" value="heatSupply" onchange="handleCheckboxChange(this)" checked> 热力
+            </label>
+            <label class="checkbox">
+                <input type="checkbox" value="industrial" onchange="handleCheckboxChange(this)" checked> 工业
+            </label>
+            <label class="checkbox">
+                <input type="checkbox" value="oil" onchange="handleCheckboxChange(this)" checked> 石油
+            </label>
+            <label class="checkbox">
+                <input type="checkbox" value="utilityTrench" onchange="handleCheckboxChange(this)" checked> 综合管沟
+            </label>
+            <label class="checkbox">
+                <input type="checkbox" value="vacuumWaste" onchange="handleCheckboxChange(this)" checked> 垃圾真空
+            </label>
+        </form>
+        <button class="button" onclick="finishChoose()">完成</button>
+    </div>
+</div>
+
+<div id="newPipe" class="newWindow">
+    <div class="modal-content">
+        <span class="close" onclick="closeNewPipe()">&times;</span>
+        <h3 class="modal-title">新建模拟管线</h3>
+        <div class="input-row">
+            <label>管线编号:</label>
+            <input type="text" placeholder="">
+        </div>
+        <div class="input-row">
+            <label>管线类型:</label>
+            <select id="firstSelect">
+                <option value="waterSupply">给水</option>
+                <option value="drainage">排气</option>
+                <option value="gas">燃气</option>
+                <option value="electricity">电力</option>
+                <option value="communication">通信</option>
+                <option value="heatSupply">热力</option>
+                <option value="industrial">工业</option>
+                <option value="oil">石油</option>
+                <option value="utilityTrench">综合管沟</option>
+                <option value="vacuumWaste">垃圾真空</option>
+            </select>
+        </div>
+        <div class="input-row">
+            <label>管线半径:</label>
+            <input type="text" placeholder="">
+        </div>
+        <div class="input-row">
+            <label>起始深度:</label>
+            <input type="text" placeholder="">
+        </div>
+        <div class="input-row">
+            <label>终止深度:</label>
+            <input type="text" placeholder="">
+        </div>
+        <div class="input-row" onclick="getMap()">
+            <label>初始经度:</label>
+            <input type="text" id="AstartLongitude" placeholder="">
+        </div>
+        <div class="input-row" onclick="getMap()">
+            <label>终点经度:</label>
+            <input type="text" id="AendLongitude" placeholder="">
+        </div>
+        <div class="input-row" onclick="getMap()">
+            <label>初始纬度:</label>
+            <input type="text" id="AstartLatitude" placeholder="">
+        </div>
+        <div class="input-row" onclick="getMap()">
+            <label>终点纬度:</label>
+            <input type="text" id="AendLatitude" placeholder="">
+        </div>
+        <button class="button" onclick="CreateNewPipe()">提交</button>
+    </div>
+</div>
+
+<div id="failureWindow" class="newWindow">
+    <div class="modal-content">
+        <span class="close" onclick="closeFailure()">&times;</span>
+        <h3 class="modal-title">管线故障上报</h3>
+        <div class="input-row">
+            <label>故障标题:</label>
+            <input type="text" placeholder="">
+        </div>
+        <div class="input-row">
+            <label>管线地点:</label>
+            <input type="text" placeholder="">
+        </div>
+        <div class="input-row">
+            <label>管线编号:</label>
+            <input id="failurePipe" type="text" placeholder="" readonly>
+        </div>
+        <div class="input-row">
+            <label>管线类型:</label>
+            <select id="failureSelect" disabled>
+                <option value="waterSupply">给水</option>
+                <option value="drainage">排气</option>
+                <option value="gas">燃气</option>
+                <option value="electricity">电力</option>
+                <option value="communication">通信</option>
+                <option value="heatSupply">热力</option>
+                <option value="industrial">工业</option>
+                <option value="oil">石油</option>
+                <option value="utilityTrench">综合管沟</option>
+                <option value="vacuumWaste">垃圾真空</option>
+            </select>
+        </div>
+        <div class="input-row">
+            <label>问题描述:</label>
+            <input id="failure" type="text" placeholder="">
+        </div>
+        <button class="button" onclick="finishFailure()">上报</button>
+    </div>
+</div>
+
+<div id="ar-button2" class="ar-button-block2">
+    <p>移动距离单位1m(米)，角度改变单位5°(度)</p>
+    <div class="button-row">
+        <button class="button" onclick="addNorth()">北</button>
+        <button class="button" onclick="addSouth()">南</button>
+        <button class="button" onclick="addWest()">西</button>
+        <button class="button" onclick="addEast()">东</button>
+    </div>
+    <div class="button-row">
+        <button class="button" onclick="addUp()">上</button>
+        <button class="button" onclick="addDown()">下</button>
+        <button class="button" onclick="addYaw()">顺水平角</button>
+        <button class="button" onclick="reduceYaw()">逆水平角</button>
+    </div>
+    <div class="button-row">
+        <button class="button double-width" onclick="turnBackWindow()">返回</button>
+        <button class="button double-width" onclick="finishNewpipe()">完成</button>
+    </div>
+</div>
+
+<div id="turnBackWindow" class="window1">
+    <div class="modal-content">
+        <span class="close" onclick="closeTurnBackWindow()">&times;</span>
+        <p><strong>警告：</strong>返回将回到上个界面<strong>(当前模拟管线数据将被删除)</strong></p>
+        <button class="button" onclick="turnBack()">确认</button>
+    </div>
+</div>
+
+<div id="downloadTXT" class="newWindow">
+    <div class="modal-content">
+        <span class="close" onclick="closeDownload()">&times;</span>
+        <h3 class="modal-title">模拟管线</h3>
+        <p>当前模拟管线位置合理，模拟管线成功添加。</p>
+        <button id="download" class="button" onclick="downTXT()">保存所有模拟管线数据</button>
+        <button class="button" onclick="returnTXT()">返回</button>
+    </div>
+</div>
+
+<div id="gpsWindow" class="gpsWindow">
+    <div class="modal-content">
+        <span class="close" onclick="closeMap()">&times;</span>
+        <h2 class="modal-title">经纬度选点</h2>
+        <div class="input-row">
+            <label>
+                <input type="radio" id="option1" name="option" value="option1" style="width: 10px" checked>
+                <span>初始经纬度：</span>
+                <input id='startLongitude' type="text" readonly>
+                <input id='startLatitude' type="text" readonly>
+            </label>
+        </div>
+        <div class="input-row">
+            <label>
+                <input type="radio" id="option2" name="option" value="option2" style="width: 10px">
+                <span>终止经纬度：</span>
+                <input id='endLongitude' type="text" readonly>
+                <input id='endLatitude' type="text" readonly>
+            </label>
+        </div>
+
+        <div id="map">
+            <div id="container" class="map"></div>
+        </div>
+
+        <button class="button" onclick="closeMap()">完成</button>
+    </div>
+</div>
+
+<script src="js/Transform.js"></script>
+<script src="js/InitCamera.js"></script>
+<script src="js/NewLocation.js"></script>
+<script src="js/InitPipeModel.js"></script>
+<script src="js/NewPipe.js"></script>
+<script src="js/button.js"></script>
+<script src="js/Choose.js"></script>
+</body>
+</html>

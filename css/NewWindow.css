@@ -1,0 +1,68 @@
+.newWindow {
+    display: none; /* 初始时隐藏弹窗 */
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4); /* 半透明的背景颜色 */
+}
+
+.newWindow .modal-content {
+    background-color: white;
+    margin: auto;
+    top:50%;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 50%;
+    transform: translateY(-50%);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.newWindow .modal-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.newWindow .input-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.newWindow .input-row label {
+    margin-right: 10px;
+}
+
+.newWindow .input-row input{
+    width: 110px;
+}
+
+.newWindow .input-row select {
+    width: 110px;
+}
+.newWindow .close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    cursor: pointer;
+}
+.newWindow .button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+}
+.newWindow #failure {
+
+    height:100px;
+}

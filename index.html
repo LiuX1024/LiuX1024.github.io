@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>开始</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"/>
+    <script type="text/javascript" src="https://cache.amap.com/lbs/static/addToolbar.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .title {
+            color: deepskyblue;
+            font-size: 24px;
+            margin-top: 20px;
+        }
+
+        .content {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; /* 左对齐 */
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .text {
+            display: flex;
+            position: absolute;
+            flex-direction: column;
+            line-height: 2;
+            font-size: 14px;
+            color: black;
+            align-items: flex-start; /* 左对齐 */
+            z-index: 2;
+        }
+
+        #map1 {
+            width: 100%;
+            height: 600px;
+            background-color: lightgray;
+        }
+
+        #map2 {
+            width: 300px;
+            height: 300px;
+            background-color: lightgray;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+        }
+
+        .map1 {
+            height: 100%;
+            width: 100%;
+            float: left;
+        }
+
+        .map2 {
+            height: 100%;
+            width: 100%;
+            float: left;
+        }
+
+        .row {
+            position: absolute;
+            bottom: 50px;
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+            line-height: 0.8;
+            color: grey;
+            font-size: 12px;
+            justify-content: center;
+        }
+
+        .button {
+            margin-top: 10px;
+            padding: 4px 12px;
+            background-color: deepskyblue;
+            color: white;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        #GetGPS {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .window1 {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            width: 50%;
+        }
+
+        .modal-content {
+            position: absolute;
+            width: 360px;
+            padding: 20px;
+            background-color: white;
+            text-align: center;
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .input-row {
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto 10px;
+            width: 200px;
+        }
+
+        .input-row label {
+            margin-right: 10px;
+        }
+
+        .input-row input {
+            flex: 1;
+        }
+
+
+        .button {
+            padding: 10px 20px;
+            background-color: deepskyblue;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .window {
+            display: none; /* 初始时隐藏弹窗 */
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4); /* 半透明的背景颜色 */
+        }
+
+        .window .modal-content {
+            background-color: white;
+            margin: auto;
+            top: 50%;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%;
+            transform: translateY(-50%);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 关闭按钮样式 */
+        .window .close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        /* 按钮样式 */
+        .window .button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
+
+    </style>
+
+</head>
+<body>
+<h1 class="title">用户001</h1>
+
+
+
+<div class="content">
+    <div class="text">
+        <p>根据当前设备GPS信息或手动输入得到：</p>
+        <p>当前位置如地图所示：</p>
+        <p id="longitude">当前经度：</p>
+        <p id="latitude">当前纬度：</p>
+    </div>
+    <div id="map1">
+        <div id="container" class="map1"></div>
+
+    </div>
+</div>
+
+
+
+<div class="row">
+    <button class="button" onclick="submitGPS()">开始巡检</button>
+    <div style="width: 60px;"></div>
+    <button class="button" onclick="openGetWindow()">手动输入</button>
+</div>
+
+<div id="GetGPS" class="window1">
+    <div class="modal-content">
+        <span class="close" onclick="closeGetWindow()">&times;</span>
+        <h3>请点击地图选点</h3>
+        <div id="map2">
+            <div id="container2" class="map2"></div>
+        </div>
+        <div class="input-row">
+            <label>经度:</label>
+            <input id="inputLongitude" type="text" placeholder="">
+        </div>
+        <div class="input-row">
+            <label>纬度:</label>
+            <input id="inputLatitude" type="text" placeholder="">
+        </div>
+        <button class="button" onclick="closeGetWindow()">完成</button>
+    </div>
+</div>
+
+<div id="Window" class="window">
+    <div class="modal-content">
+        <p id="jumpWord">即将使用……即将跳转</p>
+        <button class="button" onclick="jump()">确认</button>
+    </div>
+</div>
+
+<script src="https://webapi.amap.com/maps?v=2.0&key=e26a0aa90a4b4adfc02d2b93b151689b&plugin=AMap.Autocomplete"></script>
+<script src="js/Transform.js"></script>
+<script>
+    var flag = false;
+    var longitude;
+    var latitude;
+    var startIcon = new AMap.Icon({
+        // 图标尺寸
+        size: new AMap.Size(25, 34),
+        // 图标的取图地址
+        image: '//a.amap.com/jsapi_demos/static/demo-center/icons/dir-marker.png',
+        // 图标所用图片大小
+        imageSize: new AMap.Size(135, 40),
+        // 图标取图偏移量
+        imageOffset: new AMap.Pixel(-9, -3)
+    });
+    var startMarker;
+
+    function successCallback(position) {
+        let coords = wgs84togcj02(position.coords.latitude,position.coords.longitude);
+
+        latitude = coords[0];
+        longitude = coords[1];
+        // latitude = position.coords.latitude;
+        // longitude = position.coords.longitude;
+        console.log(latitude);
+        console.log(longitude);
+        map = new AMap.Map("container", {
+            zoom: 15,
+            center: [longitude, latitude]
+        });
+        document.getElementById('longitude').textContent = '当前经度：' + longitude;
+        document.getElementById('latitude').textContent = '当前纬度：' + latitude;
+        startMarker = new AMap.Marker({
+            position: new AMap.LngLat(longitude, latitude),
+            icon: startIcon,
+            offset: new AMap.Pixel(-13, -30)
+        });
+        startMarker.setMap(map);
+        flag = true;
+    }
+
+    function errorCallback(error) {
+        map = new AMap.Map("container", {
+            zoom: 15,
+        });
+        document.getElementById('longitude').textContent = '当前经度：无法获取';
+        document.getElementById('latitude').textContent = '当前纬度：无法获取';
+        startMarker = new AMap.Marker({
+            position: new AMap.LngLat(113.323476, 24.1183712),
+            icon: startIcon,
+            offset: new AMap.Pixel(-13, -30)
+        });
+        startMarker.setMap(map);
+        switch (error.code) {
+            case error.PERMISSION_DENIED:
+                console.log("User denied the request for Geolocation.");
+                break;
+            case error.POSITION_UNAVAILABLE:
+                console.log("Location information is unavailable.");
+                break;
+            case error.TIMEOUT:
+                console.log("The request to get user location timed out.");
+                break;
+            case error.UNKNOWN_ERROR:
+                console.log("An unknown error occurred.");
+                break;
+        }
+    }
+
+    //为地图注册click事件获取鼠标点击出的经纬度坐标
+    function closeGetWindow() {
+        document.getElementById('GetGPS').style.display = 'none';
+    }
+
+    function openGetWindow() {
+
+        document.getElementById('GetGPS').style.display = 'flex';
+        map2 = new AMap.Map("container2", {
+            zoom: 15,
+        });
+        startMarker2 = new AMap.Marker({
+            position: new AMap.LngLat(113.323476, 24.1183712),
+            icon: startIcon,
+            offset: new AMap.Pixel(-13, -30)
+        });
+        startMarker2.setMap(map2);
+        map2.on('click', function (e) {
+            document.getElementById('inputLongitude').value = e.lnglat.getLng();
+            document.getElementById('inputLatitude').value = e.lnglat.getLat();
+            document.getElementById('longitude').textContent = '当前经度：' + e.lnglat.getLng();
+            document.getElementById('latitude').textContent = '当前纬度：' + e.lnglat.getLat();
+            longitude = e.lnglat.getLng();
+            latitude = e.lnglat.getLat();
+            map.setCenter([longitude, latitude]);
+            map.setZoom(15);
+            map.remove(startMarker);
+            map2.setCenter([longitude, latitude]);
+            map2.setZoom(15);
+            map2.remove(startMarker2);
+            startMarker = new AMap.Marker({
+                position: new AMap.LngLat(longitude, latitude),
+                icon: startIcon,
+                offset: new AMap.Pixel(-13, -30)
+            });
+            startMarker2 = new AMap.Marker({
+                position: new AMap.LngLat(longitude, latitude),
+                icon: startIcon,
+                offset: new AMap.Pixel(-13, -30)
+            });
+            startMarker.setMap(map);
+            startMarker2.setMap(map2);
+            flag = true;
+        });
+    }
+
+    function submitGPS() {
+        if (flag) {
+            document.getElementById('jumpWord').innerText = "即将使用数据：\n经度：" + longitude + "\n纬度：" + latitude;
+            document.getElementById('Window').style.display = "block";
+            // 删除名为 "longitude" 的本地存储项
+            localStorage.removeItem("longitude");
+            // 删除名为 "latitude" 的本地存储项
+            localStorage.removeItem("latitude");
+            localStorage.setItem('longitude', longitude);
+            localStorage.setItem('latitude', latitude);
+            // 切换到第二个网页
+        } else {
+            alert("未获取设备信息，请手动输入！")
+        }
+    }
+
+    function jump() {
+        window.location.href = "Data.html";
+    }
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(successCallback, errorCallback,{timeout:1500});
+    } else {
+        console.log("Geolocation is not supported by this browser.");
+    }
+
+</script>
+</body>
+</html>
